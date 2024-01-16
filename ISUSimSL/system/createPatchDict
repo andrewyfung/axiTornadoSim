@@ -1,0 +1,59 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2012                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Do a synchronisation of coupled points after creation of any patches.
+// Note: this does not work with points that are on multiple coupled patches
+//       with transformations (i.e. cyclics).
+pointSync false;
+
+// Patches to create.
+patches
+(
+    {
+        //- Master side patch
+        name            AMI1;
+        patchInfo
+        {
+            type            cyclicAMI;
+            matchTolerance  0.01;
+            neighbourPatch  AMI2;
+            transform       noOrdering;
+            //rotationAxis (0 1 0);
+            //rotationCentre (0 0 0);
+        }
+        constructFrom patches;
+        patches (periodicR);
+    }
+
+    {
+        //- Slave side patch
+        name            AMI2;
+        patchInfo
+        {
+            type            cyclicAMI;
+            matchTolerance  0.01;
+            neighbourPatch  AMI1;
+            transform       noOrdering;
+            //rotationAxis (0 1 0);
+            //rotationCentre (0 0 0);
+        }
+        constructFrom patches;
+        patches (periodicL);
+    }
+
+);
+
+// ************************************************************************* //

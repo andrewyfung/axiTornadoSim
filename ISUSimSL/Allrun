@@ -1,0 +1,25 @@
+#!/bin/bash
+
+blockMesh
+
+surfaceFeatureExtract
+
+snappyHexMesh
+
+rm -rf constant/polyMesh
+mv 3/polyMesh constant
+rm -rf 1
+rm -rf 2
+rmdir 3
+
+checkMesh
+
+setExprFields
+
+topoSet
+
+createPatch
+
+decomposePar
+
+mpirun -np 16 simpleFoam -parallel

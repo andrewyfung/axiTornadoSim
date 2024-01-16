@@ -5,7 +5,6 @@
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -30,3 +29,7 @@
 *.exe
 *.out
 *.app
+
+# OF Meshes
+./ISUSim2D/constant/polyMesh
+./ISUSimSL/constant/polyMesh

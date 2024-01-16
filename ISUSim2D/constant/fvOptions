@@ -1,0 +1,62 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2012                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+disk1
+{
+    type            actuationDiskSource;
+	active			on;
+	
+	actuationDiskSourceCoeffs
+    {
+        fields      (U);
+
+        selectionMode   cellSet;
+        cellSet         actuationDisk1CellSet;
+        diskDir         (0 -1 0);    // Orientation of the disk
+        Cp              500;	// power coefficient
+        Ct              500;  // Should be 400-500 Pa pressure drop across 
+
+        diskArea        41; // Disk area is not used as area. It is instead stolen and used as the force in N
+		
+		monitorMethod	points;
+		monitorCoeffs
+		{
+			points
+			(
+				(0.35 2.3 0.05)
+				(0.4 2.3 0.05)
+				(0.45 2.3 0.05)
+				(0.5 2.3 0.05)
+				(0.55 2.3 0.05)
+				//(0.35 2.7 0.05)
+				//(0.45 2.7 0.05)
+				//(0.55 2.7 0.05)
+			);
+		}
+		
+		/*
+		monitorMethod   cellSet;
+		monitorCoeffs
+		{
+			cellSet actuationDiskMonitor;
+		}
+		*/
+		
+		variant			ts_main;
+    }
+	
+}
+

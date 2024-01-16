@@ -1,0 +1,11 @@
+#!/bin/bash
+
+blockMesh
+
+setExprFields
+
+topoSet
+
+decomposePar
+
+mpirun -np 16 simpleFoam -parallel
