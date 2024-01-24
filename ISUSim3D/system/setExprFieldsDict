@@ -1,0 +1,678 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2112                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setExprFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+defaultFieldValues
+(
+    volVectorFieldValue U (0 0 0)
+	volScalarFieldValue p 1
+);
+
+expressions
+(
+
+	// --- Velocity ---
+
+	// Core Before Disk
+    Ufordisk
+    {
+        field       U;
+        dimensions  [0 1 -1 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        	"si = pos().z()/r"
+        	"co = pos().x()/r"
+        	// "vt = 5*r + 7*sin(10*r - 4.7) + 5.5"
+            "vt = 5"
+        	"vn = 10*exp(-10*((r-1)*(r-1)+(pos().y()-2.2)*(pos().y()-2.2)))"
+
+        	"vtx = -vt*si"
+        	"vtz = vt*co"
+        	"vnx = -vn*co"
+        	"vnz = -vn*si"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(pos().y() < 2.82) && (r < 0.93)
+        #};
+
+        expression
+        #{
+			vector(vtx + vnx, 7.15*cos(1.5*r)*pos().y() + 0.15*(cos(5*r-4.2)+1)*exp(2*pos().y()-2), vtz + vnz)
+        #};
+	}
+	
+	// Core After Disk
+    Uaftdisk
+    {
+        field       U;
+        dimensions  [0 1 -1 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        	"si = pos().z()/r"
+        	"co = pos().x()/r"
+        	"vt =  5 - 5*exp(-3*(r*r + (pos().y()-4)*(pos().y()-4)))"
+        	"vn = -(6*log(r)+10.4)*(pos().y()-2.8)"
+
+        	"vtx = -vt*si"
+        	"vtz = vt*co"
+        	"vnx = -vn*co"
+        	"vnz = -vn*si"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(pos().y() > 2.82) && ((r < 0.93) || ((r < 1.19) && (pos().y() >= 2.54 + r)))
+        #};
+
+        expression
+        #{
+			vector(vtx + vnx, (73.2-18.3*pos().y())*(((0.5*cos(2*r+3.14))*(pos().y()-2.8))+1), vtz + vnz)
+        #};
+	}
+
+	// Horizontal Duct Section
+    Uhor
+    {
+        field       U;
+        dimensions  [0 1 -1 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        	"si = pos().z()/r"
+        	"co = pos().x()/r"
+        	"vt = 4.42*r"
+        	"vn = -11.5"
+
+        	"vtx = -vt*si"
+        	"vtz = vt*co"
+        	"vnx = -vn*co"
+        	"vnz = -vn*si"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(pos().y() > 3.73) && (r < 2.12) && (r > 1.19)
+        #};
+
+        expression
+        #{
+			vector(vtx + vnx, 0, vtz + vnz)
+        #};
+	}
+
+	// Outflow Duct Bend
+    Ubend
+    {
+        field       U;
+        dimensions  [0 1 -1 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        	"si = pos().z()/r"
+        	"co = pos().x()/r"
+        	"vt = 4.42*r"
+        	"vn = -60.26 + 23*r"
+
+        	"vtx = -vt*si"
+        	"vtz = vt*co"
+        	"vnx = -vn*co"
+        	"vnz = -vn*si"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(pos().y() > 3.43) && (r > 2.12) && (pos().y() >= 5.85 - r)
+        #};
+
+        expression
+        #{
+			vector(vtx + vnx, 80 - 38*r, vtz + vnz)
+        #};
+	}
+
+	// Vertical Duct Section
+    Uduct
+    {
+        field       U;
+        dimensions  [0 1 -1 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        	"si = pos().z()/r"
+        	"co = pos().x()/r"
+        	"vt = 4.42*r"
+        	"vn = 0"
+
+        	"vtx = -vt*si"
+        	"vtz = vt*co"
+        	"vnx = -vn*co"
+        	"vnz = -vn*si"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(pos().y() > 0.71) && (r > 2.425) && (r < 2.755)
+        #};
+
+        expression
+        #{
+			vector(vtx + vnx, -11.5, vtz + vnz)
+        #};
+	}
+
+	// Exit of duct
+    Uductexit
+    {
+        field       U;
+        dimensions  [0 1 -1 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        	"si = pos().z()/r"
+        	"co = pos().x()/r"
+        	"vt = 4.42*r"
+        	"vn = 5*exp(-5*((r-2.3)*(r-2.3)+(pos().y()-0.3)*(pos().y()-0.3)))"
+
+        	"vtx = -vt*si"
+        	"vtz = vt*co"
+        	"vnx = -vn*co"
+        	"vnz = -vn*si"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(pos().y() < 0.71) && (r > 2.425) && (r < 2.755)
+        #};
+
+        expression
+        #{
+			vector(vtx + vnx, (-16.2*pos().y())*cos(7*r+0.6), vtz + vnz)
+        #};
+	}
+
+	// Transition from duct to core
+    Utrans
+    {
+        field       U;
+        dimensions  [0 1 -1 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        	"si = pos().z()/r"
+        	"co = pos().x()/r"
+        	"vt = 4.42*r"
+        	//"vn = mag((4*cos(0.9*r - 2.41)*cos(3.8*pos().y()-1.5) + 0.1)*(0.7 - 0.8*log(2*pos().y() + 0.2)) + 0.5*pos().y()*pos().y())"
+            "vn = 10*exp(-10*((r-1)*(r-1)+(pos().y()-2.2)*(pos().y()-2.2))) + 5*exp(-5*((r-2.3)*(r-2.3)+(pos().y()-0.3)*(pos().y()-0.3)))"
+
+        	"vtx = -vt*si"
+        	"vtz = vt*co"
+        	"vnx = -vn*co"
+        	"vnz = -vn*si"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			//(r > 0.93) && (pos().y() <= 3.18 - 1.034*r) && (r < 2.425)
+            (r > 0.93) && (r < 2.425) && (pos().y() < 3)
+        #};
+
+        expression
+        #{
+			vector(vtx + vnx, -3*exp(-2*((r-1)*(r-1)+(pos().y()-2.5)*(pos().y()-2.5))) + 3*exp(-5*((r-2.3)*(r-2.3)+(pos().y()-1.5)*(pos().y()-1.5))), vtz + vnz)
+        #};
+	}
+
+	// Vortex Core pre-disk
+    Ucorepd
+    {
+        field       U;
+        dimensions  [0 1 -1 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        	"si = pos().z()/r"
+        	"co = pos().x()/r"
+        	"vt = 5*exp(-500*pow(r-0.25,4));"
+        	"vn = 0"
+
+        	"vtx = -vt*si"
+        	"vtz = vt*co"
+        	"vnx = -vn*co"
+        	"vnz = -vn*si"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(r < 0.25) && (pos().y() < 2.82)
+        #};
+
+        expression
+        #{
+			vector(vtx + vnx, 7.15*cos(1.5*r)*pos().y() + 0.15*(cos(5*r-4.2)+1)*exp(2*pos().y()-2), vtz + vnz)
+        #};
+	}
+
+	// Vortex Core after disk
+    Ucoread
+    {
+        field       U;
+        dimensions  [0 1 -1 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        	"si = pos().z()/r"
+        	"co = pos().x()/r"
+        	"vt = 4*exp(-500*pow(r-0.25,4))*(4-pos().y());"
+        	"vn = 0"
+
+        	"vtx = -vt*si"
+        	"vtz = vt*co"
+        	"vnx = -vn*co"
+        	"vnz = -vn*si"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(r < 0.25) && (pos().y() > 2.82)
+        #};
+
+        expression
+        #{
+			vector(vtx + vnx, 56.67 - 14.2*pos().y(), vtz + vnz)
+        #};
+	}
+
+
+
+
+
+
+
+
+	
+	// --- Pressure ---
+
+	// Core Before Disk
+    pcore
+    {
+		field       p;
+        dimensions  [0 2 -2 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(pos().y() < 2.2) && (r < 0.93)
+        #};
+
+        expression
+        #{
+			(50*cos(3.35*r + 3.14) - 150) + (75*pos().y()*(r-0.93))
+        #};
+	}
+
+	// Core in Inlet
+    pinlet
+    {
+		field       p;
+        dimensions  [0 2 -2 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(pos().y() > 2.2) && (pos().y() < 2.82) && (r < 0.93)
+        #};
+
+        expression
+        #{
+			((100*cos(6.72*r + 3.14)) - 300) - (200*(pos().y() - 2.2))
+        #};
+	}
+
+	// Core After Disk
+    paftdisk
+    {
+		field       p;
+        dimensions  [0 2 -2 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(pos().y() > 2.82) && ((r < 0.93) || ((r < 1.19) && (pos().y() >= 2.54 + r)))
+        #};
+
+        expression
+        #{
+			-20*(pos().y()-2.8)*(r - 9) + 300*(3.5 - pos().y())*(r - 0.25)*(r - 0.25)
+        #};
+	}
+
+	// Horizontal Duct Section
+    phor
+    {
+		field       p;
+        dimensions  [0 2 -2 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(pos().y() > 3.73) && (r < 2.12) && (r > 1.19)
+        #};
+
+        expression
+        #{
+			50
+        #};
+	}
+
+	// Outflow Duct Bend
+    pbend
+    {
+		field       p;
+        dimensions  [0 2 -2 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(pos().y() > 3.43) && (r > 2.12) && (pos().y() >= 5.85 - r)
+        #};
+
+        expression
+        #{
+			333 - 133*r
+        #};
+	}
+
+	// Exit of duct
+    pductexit
+    {
+		field       p;
+        dimensions  [0 2 -2 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(pos().y() < 0.71) && (r > 2.425) && (r < 2.755)
+        #};
+
+        expression
+        #{
+			5
+        #};
+	}
+
+	// Vertical Outflow Duct Section
+    pduct
+    {
+		field       p;
+        dimensions  [0 2 -2 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(pos().y() > 0.71) && (r > 2.425) && (r < 2.755)
+        #};
+
+        expression
+        #{
+			10
+        #};
+	}
+
+	// Transition from duct to core
+    ptrans
+    {
+		field       p;
+        dimensions  [0 2 -2 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(r > 0.93) && (pos().y() <= 3.18 - 1.034*r) && (r < 2.425)
+        #};
+
+        expression
+        #{
+			-100*exp(-3*(r - 0.9))
+        #};
+	}
+
+
+	// Vortex Core Pre-disk
+    pcorepd
+    {
+        field       p;
+        dimensions  [0 2 -2 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(r < 0.25) && (pos().y() < 2.82)
+        #};
+
+        expression
+        #{
+			-250 - 88.65*pos().y()
+        #};
+	}
+
+	// Vortex Core after disk
+    pcoread
+    {
+        field       p;
+        dimensions  [0 2 -2 0 0 0 0];
+
+        constants
+        {
+        }
+
+        variables
+        (
+        	"r = sqrt(pos().x()*pos().x() + pos().z()*pos().z())"
+        );
+
+
+		// Upward Section
+		condition
+        //fieldMask
+        #{
+			(r < 0.25) && (pos().y() > 2.82)
+        #};
+
+        expression
+        #{
+			167*(pos().y() - 2.8)
+        #};
+	}
+	
+);
+
+
+// ************************************************************************* //

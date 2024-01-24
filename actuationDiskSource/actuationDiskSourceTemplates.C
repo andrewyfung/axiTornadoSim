@@ -68,6 +68,12 @@ void Foam::fv::actuationDiskSource::calc
             break;
         }
 
+        case forceMethodType::POROUS:
+        {
+            calcPorous(alpha, rho, eqn);
+            break;
+        }
+
         default:
             break;
     }
@@ -257,6 +263,7 @@ void Foam::fv::actuationDiskSource::calcVariableScalingMethod
 }
 
 
+
 template<class AlphaFieldType, class RhoFieldType>
 void Foam::fv::actuationDiskSource::calcTSMain
 (
@@ -268,38 +275,12 @@ void Foam::fv::actuationDiskSource::calcTSMain
     const vectorField& U = eqn.psi();
     vectorField& Usource = eqn.source();
     const scalarField& cellsV = mesh_.V();
-    const volVectorField& cellsC = mesh_.C();
-
-    // Monitor and average monitor-region U and rho
-    vector Uref(Zero);
-    scalar rhoRef = 0.0;
-    label szMonitorCells = monitorCells_.size();
-
-    for (const auto& celli : monitorCells_)
-    {
-        Uref += U[celli];
-        rhoRef = rhoRef + rho[celli];
-    }
-    reduce(Uref, sumOp<vector>());
-    reduce(rhoRef, sumOp<scalar>());
-    reduce(szMonitorCells, sumOp<label>());
-
-    if (szMonitorCells == 0)
-    {
-        FatalErrorInFunction
-            << "No cell is available for incoming velocity monitoring."
-            << exit(FatalError);
-    }
-
-    Uref /= szMonitorCells;
-    const scalar magUref = mag(Uref);
-    rhoRef /= szMonitorCells;
+    //const volVectorField& cellsC = mesh_.C();
 
     // Monitor and average U and rho on actuator disk
     vector Udisk(Zero);
     scalar rhoDisk = 0.0;
     scalar totalV = 0.0;
-
     for (const auto& celli : cells_)
     {
         Udisk += U[celli]*cellsV[celli];
@@ -318,16 +299,7 @@ void Foam::fv::actuationDiskSource::calcTSMain
     }
 
     Udisk /= totalV;
-    const scalar magUdisk = mag(Udisk);
     rhoDisk /= totalV;
-
-    if (mag(Udisk) < SMALL)
-    {
-        FatalErrorInFunction
-            << "Velocity spatial-averaged on actuator disk is zero." << nl
-            << "Please check if the initial U field is zero."
-            << exit(FatalError);
-    }
 
     // Compute calibrated thrust/power (LSRMTK:Eq. 5)
     const scalar T = diskArea_;
@@ -373,36 +345,10 @@ void Foam::fv::actuationDiskSource::calcTSTurn
     const scalarField& cellsV = mesh_.V();
     const volVectorField& cellsC = mesh_.C();
 
-    // Monitor and average monitor-region U and rho
-    vector Uref(Zero);
-    scalar rhoRef = 0.0;
-    label szMonitorCells = monitorCells_.size();
-
-    for (const auto& celli : monitorCells_)
-    {
-        Uref += U[celli];
-        rhoRef = rhoRef + rho[celli];
-    }
-    reduce(Uref, sumOp<vector>());
-    reduce(rhoRef, sumOp<scalar>());
-    reduce(szMonitorCells, sumOp<label>());
-
-    if (szMonitorCells == 0)
-    {
-        FatalErrorInFunction
-            << "No cell is available for incoming velocity monitoring."
-            << exit(FatalError);
-    }
-
-    Uref /= szMonitorCells;
-    const scalar magUref = mag(Uref);
-    rhoRef /= szMonitorCells;
-
     // Monitor and average U and rho on actuator disk
     vector Udisk(Zero);
     scalar rhoDisk = 0.0;
     scalar totalV = 0.0;
-
     for (const auto& celli : cells_)
     {
         Udisk += U[celli]*cellsV[celli];
@@ -421,32 +367,8 @@ void Foam::fv::actuationDiskSource::calcTSTurn
     }
 
     Udisk /= totalV;
-    const scalar magUdisk = mag(Udisk);
     rhoDisk /= totalV;
 
-    if (mag(Udisk) < SMALL)
-    {
-        FatalErrorInFunction
-            << "Velocity spatial-averaged on actuator disk is zero." << nl
-            << "Please check if the initial U field is zero."
-            << exit(FatalError);
-    }
-
-    // Interpolated thrust/power coeffs from power/thrust curves
-    const scalar Ct = sink_*UvsCtPtr_->value(magUref);
-    const scalar Cp = sink_*UvsCpPtr_->value(magUref);
-
-    if (Cp <= VSMALL || Ct <= VSMALL)
-    {
-        FatalErrorInFunction
-           << "Cp and Ct must be greater than zero." << nl
-           << "Cp = " << Cp << ", Ct = " << Ct
-           << exit(FatalIOError);
-    }
-
-    // Calibrated thrust/power coeffs from power/thrust curves (LSRMTK:Eq. 6)
-    const scalar CtStar = Ct*sqr(magUref/magUdisk);
-    const scalar CpStar = Cp*pow3(magUref/magUdisk);
 
     // Compute calibrated thrust/power (LSRMTK:Eq. 5)
     const scalar T = diskArea_;
@@ -475,6 +397,77 @@ void Foam::fv::actuationDiskSource::calcTSTurn
 
 
 
+template<class AlphaFieldType, class RhoFieldType>
+void Foam::fv::actuationDiskSource::calcPorous
+(
+    const AlphaFieldType& alpha,
+    const RhoFieldType& rho,
+    fvMatrix<vector>& eqn
+)
+{
+    const vectorField& U = eqn.psi();
+    vectorField& Usource = eqn.source();
+    const scalarField& cellsV = mesh_.V();
+    //const volVectorField& cellsC = mesh_.C();
+
+    // Monitor and average U and rho on actuator disk
+    vector Udisk(Zero);
+    scalar rhoDisk = 0.0;
+    scalar totalV = 0.0;
+    for (const auto& celli : cells_)
+    {
+        Udisk += U[celli]*cellsV[celli];
+        rhoDisk += rho[celli]*cellsV[celli];
+        totalV += cellsV[celli];
+    }
+    reduce(Udisk, sumOp<vector>());
+    reduce(rhoDisk, sumOp<scalar>());
+    reduce(totalV, sumOp<scalar>());
+
+    if (totalV < SMALL)
+    {
+        FatalErrorInFunction
+            << "No cell in the actuator disk."
+            << exit(FatalError);
+    }
+
+    Udisk /= totalV;
+
+    Ostream& os = file();
+
+    const scalar C2_axial = 0.7;
+    const scalar C2_tan = 70;
+    for (const label celli : cells_)
+    {
+        vector Ucell = U[celli];
+        scalar Umag = mag(Ucell);
+
+        scalar Tmag = 1;
+
+        if (Umag >= 100 || Umag <= 1)
+        {
+            Ucell -= Ucell;
+        }
+        scalar Ux = Ucell.x();
+        scalar Uy = Ucell.y();
+        scalar Uz = Ucell.z();
+
+        vector Tvec(C2_tan*Umag*Ux, C2_axial*Umag*Uy, C2_tan*Umag*Uz);
+
+        Usource[celli] += Tmag*Tvec*cellsV[celli];
+    }
+
+    if
+    (
+        mesh_.time().timeOutputValue() >= writeFileStart_
+     && mesh_.time().timeOutputValue() <= writeFileEnd_
+    )
+    {
+        writeCurrentTime(os);
+
+        os  << Udisk << endl;
+    }
+}
 
 
 

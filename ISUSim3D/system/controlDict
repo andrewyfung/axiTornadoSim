@@ -1,0 +1,86 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2012                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     simpleFoam;
+
+startFrom       latestTime;
+
+stopAt          endTime;
+
+endTime         10000;
+
+deltaT          1;
+
+writeControl    timeStep;
+
+writeInterval   100;
+
+purgeWrite      1;
+
+writeFormat     binary;
+
+writePrecision  4;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+functions
+{
+
+	solverInfo
+	{
+	    type            solverInfo;
+	    libs            (libutilityFunctionObjects);
+	    fields          (U p omega k);
+	    writeResidualFields no;
+	}
+
+	limitFields1 //pressure limiter
+	{
+		type		limitFields;
+		libs		(fieldFunctionObjects);
+		fields		(p);
+		limit		both;
+		min			-1e5;
+		max			1e5;
+		writeControl	none;
+	}
+	
+	limitField2 //velocity limiter
+	{
+		type		limitFields;
+		libs		(fieldFunctionObjects);
+		fields		(U);
+		limit		both;
+		min			-1e3;
+		max			1e3;
+		writeControl	none;
+	}
+
+	#include "FOvortex"
+	#include "FOinlet"
+	#include "FOturn"
+
+}
+
+
+// ************************************************************************* //

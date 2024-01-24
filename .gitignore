@@ -32,4 +32,5 @@
 
 # OF Meshes
 ./ISUSim2D/constant/polyMesh
+./ISUSim3D/constant/polyMesh
 ./ISUSimSL/constant/polyMesh

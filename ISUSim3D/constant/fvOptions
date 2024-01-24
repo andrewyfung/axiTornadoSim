@@ -1,0 +1,126 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2012                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+disk1
+{
+    type            actuationDiskSource;
+	active			on;
+	
+	actuationDiskSourceCoeffs
+    {
+        fields      (U);
+
+        selectionMode   cellSet;
+        cellSet         actuationDiskMain;
+        diskDir         (0 -1 0);    // Not Used
+        Cp              500;	// Not Used
+        Ct              500;  // Not Used
+        diskArea        500;	// Repurposed as disk force in N
+
+		monitorMethod	points;
+		monitorCoeffs // Not Used
+		{
+			points
+			(
+				(0.35 2.3 0.05)
+				(0.4 2.3 0.05)
+				(0.45 2.3 0.05)
+				(0.5 2.3 0.05)
+				(0.55 2.3 0.05)
+				//(0.35 2.7 0.05)
+				//(0.45 2.7 0.05)
+				//(0.55 2.7 0.05)
+			);
+		}
+		
+		variant			ts_main;
+    }
+	
+}
+
+disk2
+{
+    type            actuationDiskSource;
+	active			on;
+	
+	actuationDiskSourceCoeffs
+    {
+        fields      (U);
+
+        selectionMode   cellSet;
+        cellSet         actuationDiskTurn;
+        diskDir         (0 1 0);    // Not Used
+        Cp              500;	// Not Used
+        Ct              500;  // Not Used
+        diskArea        50; // Repurposed as disk force in N
+
+		monitorMethod	points;
+		monitorCoeffs // Not Used
+		{
+			points
+			(
+				(0.35 2.3 0.05)
+				(0.4 2.3 0.05)
+				(0.45 2.3 0.05)
+				(0.5 2.3 0.05)
+				(0.55 2.3 0.05)
+				//(0.35 2.7 0.05)
+				//(0.45 2.7 0.05)
+				//(0.55 2.7 0.05)
+			);
+		}
+		
+		variant			ts_turn;
+    }
+	
+}
+
+disk3
+{
+    type            actuationDiskSource;
+	active			off;
+	
+	actuationDiskSourceCoeffs
+    {
+        fields      (U);
+
+        selectionMode   cellSet;
+        cellSet         actuationDiskPorous;
+        diskDir         (0 1 0);  // Not Used
+        Cp              500;	// Not Used
+        Ct              500;  // Not Used
+        diskArea        50;   // Not Used
+
+		monitorMethod	points;
+		monitorCoeffs // Not Used
+		{
+			points
+			(
+				(0.35 2.3 0.05)
+				(0.4 2.3 0.05)
+				(0.45 2.3 0.05)
+				(0.5 2.3 0.05)
+				(0.55 2.3 0.05)
+				//(0.35 2.7 0.05)
+				//(0.45 2.7 0.05)
+				//(0.55 2.7 0.05)
+			);
+		}
+		
+		variant			porous;
+    }
+	
+}

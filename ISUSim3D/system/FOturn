@@ -1,0 +1,43 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2312                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+FOturn
+{
+    type            volFieldValue;
+    libs            (fieldFunctionObjects);
+    executeControl  timeStep;
+    executeInterval 1;
+    writeControl    timeStep;
+    writeInterval   1;
+    setFormat       probes;
+    fields          ( U );
+    operation       volAverage;
+    regionType      cellZone;
+    name            actuationDiskTurn;
+    writeFields     false;
+}
+
+FOturnMAG
+{
+    type            volFieldValue;
+    libs            (fieldFunctionObjects);
+    executeControl  timeStep;
+    executeInterval 1;
+    writeControl    timeStep;
+    writeInterval   1;
+    setFormat       probes;
+    fields          ( U );
+    operation       volAverage;
+    regionType      cellZone;
+    name            actuationDiskTurn;
+    writeFields     false;
+    postOperation   mag;
+}
+
+// ************************************************************************* //
+

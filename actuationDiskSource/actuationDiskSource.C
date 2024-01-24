@@ -54,6 +54,7 @@ Foam::fv::actuationDiskSource::forceMethodTypeNames
     { forceMethodType::VARIABLE_SCALING, "variableScaling" },
     { forceMethodType::TS_MAIN, "ts_main" },
     { forceMethodType::TS_TURN, "ts_turn" },
+    { forceMethodType::POROUS, "porous" },
 });
 
 

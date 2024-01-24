@@ -241,6 +241,7 @@ protected:
             VARIABLE_SCALING,       //!< "Variable-scaling actuator disk method"
             TS_MAIN,                // Tornado Simlator, Main AD
             TS_TURN,                // Tornado Simulator, Turning Vanes
+            POROUS,                 // Porous Media for TS Honeycomb
         };
 
         //- Names for forceMethodType
@@ -340,6 +341,14 @@ private:
 
         template<class AlphaFieldType, class RhoFieldType>
         void calcTSTurn
+        (
+            const AlphaFieldType& alpha,
+            const RhoFieldType& rho,
+            fvMatrix<vector>& eqn
+        );
+
+        template<class AlphaFieldType, class RhoFieldType>
+        void calcPorous
         (
             const AlphaFieldType& alpha,
             const RhoFieldType& rho,

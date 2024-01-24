@@ -1,0 +1,178 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2312                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+FOvortex
+{
+    type            sets;
+    libs            (sampling);
+    executeControl  timeStep;
+    executeInterval   100;
+    writeControl    timeStep;
+    writeInterval   100;
+    setFormat       probes;
+    fields          ( U );
+    interpolationScheme cellPoint;
+    setFormat       csv;
+    sets
+    (
+        l01
+        {
+            type        uniform;
+            axis        xyz;
+            start       (-1.5 0.25 0);
+            end         (1.5 0.25 0);
+            nPoints     250;
+        }
+        l02
+        {
+            type        uniform;
+            axis        xyz;
+            start       (0 0.25 -1.5);
+            end         (0 0.25 1.5);
+            nPoints     250;
+        }
+        l03
+        {
+            type        uniform;
+            axis        xyz;
+            start       (-1.061 0.25 1.061);
+            end         (1.061 0.25 -1.061);
+            nPoints     250;
+        }
+        l04
+        {
+            type        uniform;
+            axis        xyz;
+            start       (-1.061 0.25 -1.061);
+            end         (1.061 0.25 1.061);
+            nPoints     250;
+        }
+
+        l11
+        {
+            type        uniform;
+            axis        xyz;
+            start       (-1.5 0.5 0);
+            end         (1.5 0.5 0);
+            nPoints     250;
+        }
+        l12
+        {
+            type        uniform;
+            axis        xyz;
+            start       (0 0.5 -1.5);
+            end         (0 0.5 1.5);
+            nPoints     250;
+        }
+        l13
+        {
+            type        uniform;
+            axis        xyz;
+            start       (-1.061 0.5 1.061);
+            end         (1.061 0.5 -1.061);
+            nPoints     250;
+        }
+        l14
+        {
+            type        uniform;
+            axis        xyz;
+            start       (-1.061 0.5 -1.061);
+            end         (1.061 0.5 1.061);
+            nPoints     250;
+        }
+
+        l21
+        {
+            type        uniform;
+            axis        xyz;
+            start       (-1.5 0.75 0);
+            end         (1.5 0.75 0);
+            nPoints     250;
+        }
+        l22
+        {
+            type        uniform;
+            axis        xyz;
+            start       (0 0.75 -1.5);
+            end         (0 0.75 1.5);
+            nPoints     250;
+        }
+        l23
+        {
+            type        uniform;
+            axis        xyz;
+            start       (-1.061 0.75 1.061);
+            end         (1.061 0.75 -1.061);
+            nPoints     250;
+        }
+        l24
+        {
+            type        uniform;
+            axis        xyz;
+            start       (-1.061 0.75 -1.061);
+            end         (1.061 0.75 1.061);
+            nPoints     250;
+        }
+
+        l31
+        {
+            type        uniform;
+            axis        xyz;
+            start       (-1.5 1.0 0);
+            end         (1.5 1.0 0);
+            nPoints     250;
+        }
+        l32
+        {
+            type        uniform;
+            axis        xyz;
+            start       (0 1.0 -1.5);
+            end         (0 1.0 1.5);
+            nPoints     250;
+        }
+        l33
+        {
+            type        uniform;
+            axis        xyz;
+            start       (-1.061 1.0 1.061);
+            end         (1.061 1.0 -1.061);
+            nPoints     250;
+        }
+        l34
+        {
+            type        uniform;
+            axis        xyz;
+            start       (-1.061 1.0 -1.061);
+            end         (1.061 1.0 1.061);
+            nPoints     250;
+        }
+
+
+
+
+
+        // vortex
+        // {
+        //     type    array;
+        //     axis    xyz;
+        //     pointsDensity (1 5 1);
+        //     spanBox (2 1 2);
+        //     origin  (-1 0 -1);
+        //     rotation
+        //     {
+        //         type    axes;
+        //         e1      (1 0 0);
+        //         e2      (0 1 0);
+        //     }
+        // }
+    );
+}
+
+
+// ************************************************************************* //
+

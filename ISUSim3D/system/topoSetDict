@@ -1,0 +1,90 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2012                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+actions
+(
+    // Main Actuator Disk
+    {
+        name    actuationDisk1CellSet;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        p1      (0 2.81 0);//p1      (0 2.81 0);
+        p2      (0 2.83 0);
+        radius  0.92;
+    }
+
+    {
+        name    actuationDiskMain;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     actuationDisk1CellSet;
+    }
+
+
+    // Turning Actuator Disk
+    {
+        name    actuationDisk2CellSet;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        p1      (0 1.6 0);
+        p2      (0 1.8 0);
+        radius  2.755;
+    }
+    {
+        name    actuationDisk2CellSet;
+        type    cellSet;
+        action  delete;
+        source  cylinderToCell;
+        p1      (0 1.5 0);
+        p2      (0 1.9 0);
+        radius  2.425;
+    }
+
+    {
+        name    actuationDiskTurn;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     actuationDisk2CellSet;
+    }
+	
+	// Honeycomb Porous Region
+    {
+        name    actuationDisk3CellSet;
+        type    cellSet;
+        action  new;
+        source  cylinderToCell;
+        p1      (0 2.21 0);
+        p2      (0 2.56 0);
+        radius  0.92;
+    }
+
+    {
+        name    actuationDiskPorous;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        set     actuationDisk3CellSet;
+    }
+	
+	
+);
+
+
+// ************************************************************************* //
