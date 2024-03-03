@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORKDIR=/work/sharma/afung/TornadoSim/ISUSim
+WORKDIR=/work/sharma/afung/TornadoSim/ISUSim12
 FOAMDIR=/work/sharma/afung/openfoam_v2312
 MEM=128G
 
@@ -83,7 +83,7 @@ topoSet
 rm 0/*
 cp 0_MT/* 0
 
-##setExprFields
+setExprFields
 
 rm system/decomposeParDict
 cp system/decomposeParDict_run system/decomposeParDict
@@ -104,7 +104,7 @@ cat << EOF > run.sbatch
 #SBATCH --mem=$MEM
 
 #SBATCH --output=log
-#SBATCH --time=24:00:00
+#SBATCH --time=54:00:00
 #SBATCH --mail-type=BEGIN,FAIL,END
 #SBATCH --mail-user=afung@iastate.edu
 
@@ -117,9 +117,10 @@ source $FOAMDIR/etc/bashrc
 
 decomposePar
 
-mpirun -np 64 simpleFoam -parallel
+mpirun -np 64 porousSimpleFoam -parallel
 
 EOF
+
 
 echo "Enter r to run, p to prep and run, or m to mesh, prep, and run"
 read opt

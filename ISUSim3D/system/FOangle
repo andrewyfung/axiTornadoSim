@@ -1,0 +1,40 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2312                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+FOangle
+{
+    type            sets;
+    libs            (sampling);
+    executeControl  timeStep;
+    executeInterval   1;
+    writeControl    timeStep;
+    writeInterval   1;
+    setFormat       probes;
+    fields          ( U );
+    interpolationScheme cellPoint;
+    setFormat       csv;
+    sets
+    (
+		points
+		{
+			type	cloud;
+			axis	xyz;
+			points
+			(
+				(0 0.7 2.59)
+				(0 0.7 -2.59)
+				(2.59 0.7 0)
+				(-2.59 0.7 0)
+			);
+		}
+    );
+}
+
+
+// ************************************************************************* //
+

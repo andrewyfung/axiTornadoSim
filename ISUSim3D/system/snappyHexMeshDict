@@ -51,8 +51,8 @@ geometry
     {
         type cylinder;
         point1 (0 0 0);
-        point2 (0 3 0);
-        radius 0.93;
+        point2 (0 2.5 0);
+        radius 1.2;
     }
 
     tallerRefine
@@ -125,7 +125,7 @@ castellatedMeshControls
     // Number of buffer layers between different levels.
     // 1 means normal 2:1 refinement restriction, larger means slower
     // refinement.
-    nCellsBetweenLevels 3;
+    nCellsBetweenLevels 8;
 
 
 
@@ -213,19 +213,18 @@ castellatedMeshControls
         tallRefine
         {
             mode inside;
-            levels ((1E15 2));
+            levels ((1E15 4));
         }
-	tallerRefine
-	{
-	    mode inside;
-	    levels ((1E15 1));
-	}
-	midRefine
-	{
-	    mode inside;
-	    levels ((1E15 1));
-	}
-
+    	tallerRefine
+    	{
+    	    mode inside;
+            levels ((1E15 1));
+    	}
+    	midRefine
+    	{
+    	    mode inside;
+    	    levels ((1E15 1));
+    	}
         wideRefine
         {
             mode inside;

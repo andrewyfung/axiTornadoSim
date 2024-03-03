@@ -73,26 +73,36 @@ Foam::fv::actuationDiskSource::monitorMethodTypeNames
 
 void Foam::fv::actuationDiskSource::writeFileHeader(Ostream& os)
 {
-    writeFile::writeHeader(os, "Actuation disk source");
-    writeFile::writeCommented(os, "Time");
-    writeFile::writeCommented(os, "Uref");
-    writeFile::writeCommented(os, "Cp");
-    writeFile::writeCommented(os, "Ct");
+    if (forceMethod_ != forceMethodType::TS_TURN)
+    {
+        writeFile::writeHeader(os, "Actuation disk source");
+        writeFile::writeCommented(os, "Time");
+        writeFile::writeCommented(os, "Uref");
+        writeFile::writeCommented(os, "Cp");
+        writeFile::writeCommented(os, "Ct");
 
-    if (forceMethod_ == forceMethodType::FROUDE)
+        if (forceMethod_ == forceMethodType::FROUDE)
+        {
+            writeFile::writeCommented(os, "a");
+            writeFile::writeCommented(os, "T");
+        }
+        else if (forceMethod_ == forceMethodType::VARIABLE_SCALING)
+        {
+            writeFile::writeCommented(os, "Udisk");
+            writeFile::writeCommented(os, "CpStar");
+            writeFile::writeCommented(os, "CtStar");
+            writeFile::writeCommented(os, "T");
+            writeFile::writeCommented(os, "P");
+        }  
+    } else if (forceMethod_ == forceMethodType::TS_TURN)
     {
-        writeFile::writeCommented(os, "a");
-        writeFile::writeCommented(os, "T");
-    }
-    else if (forceMethod_ == forceMethodType::VARIABLE_SCALING)
-    {
+        writeFile::writeHeader(os, "Actuation disk source");
+        writeFile::writeCommented(os, "Time");
+        writeFile::writeCommented(os, "Uref");
+        writeFile::writeCommented(os, "Flow Angle");
+        writeFile::writeCommented(os, "Thrust");
         writeFile::writeCommented(os, "Udisk");
-        writeFile::writeCommented(os, "CpStar");
-        writeFile::writeCommented(os, "CtStar");
-        writeFile::writeCommented(os, "T");
-        writeFile::writeCommented(os, "P");
     }
-
     os  << endl;
 }
 

@@ -345,6 +345,39 @@ void Foam::fv::actuationDiskSource::calcTSTurn
     const scalarField& cellsV = mesh_.V();
     const volVectorField& cellsC = mesh_.C();
 
+
+    Ostream& os = file();
+
+    // Monitor and average monitor-region U and rho
+    vector Uref(Zero); //---
+    scalar flowAngle = 0.0;
+    label szMonitorCells = monitorCells_.size();
+
+    for (const auto& celli : monitorCells_)
+    {
+        Uref += U[celli]; //---
+
+        // scalar r = sqrt(pow(cellsC[celli].x(),2) + pow(cellsC[celli].z(),2));
+
+        scalar angle = atan(cellsC[celli].z()/(cellsC[celli].x()+0.000001));
+        
+        scalar Urad = mag(U[celli].x()*cos(angle)) + mag(U[celli].z()*sin(angle));
+        scalar Utan = mag(U[celli].z()*cos(angle)) - mag(U[celli].x()*sin(angle));
+
+        flowAngle = flowAngle + mag(atan(Utan/(Urad+0.000001)));
+
+        // os << cellsC[celli].x() << tab << cellsC[celli].y() << tab << cellsC[celli].z() << tab << angle << endl;
+        // os << tab << U[celli].x() << tab << U[celli].z() << tab << Utan << tab << Uy << endl;
+
+    }
+    reduce(Uref, sumOp<vector>()); //---
+    reduce(flowAngle, sumOp<scalar>());
+    reduce(szMonitorCells, sumOp<label>());
+
+    Uref /= szMonitorCells;
+    flowAngle /= szMonitorCells;
+    flowAngle *= 180/3.14159;
+
     // Monitor and average U and rho on actuator disk
     vector Udisk(Zero);
     scalar rhoDisk = 0.0;
@@ -370,10 +403,12 @@ void Foam::fv::actuationDiskSource::calcTSTurn
     rhoDisk /= totalV;
 
 
-    // Compute calibrated thrust/power (LSRMTK:Eq. 5)
+    // Compute calibrated thrust/power
+    if (diskDir_[1] > 0.5) {
+        const scalar targetAngle = UvsCtPtr_->value(1);
+        diskArea_ += UvsCpPtr_->value(1)*(targetAngle - flowAngle);
+    }
     const scalar T = diskArea_;
-
-    Ostream& os = file();
 
     for (const label celli : cells_)
     {
@@ -391,7 +426,7 @@ void Foam::fv::actuationDiskSource::calcTSTurn
     {
         writeCurrentTime(os);
 
-        os  << Udisk << tab << T << tab << endl;
+        os << Uref << tab << flowAngle << tab << diskArea_ << tab << Udisk << tab << endl;
     }
 }
 
@@ -435,26 +470,26 @@ void Foam::fv::actuationDiskSource::calcPorous
 
     Ostream& os = file();
 
-    const scalar C2_axial = 0.7;
-    const scalar C2_tan = 70;
+    const scalar C2_axial = 0.1;
+    const scalar C2_tan = 1000;
     for (const label celli : cells_)
     {
         vector Ucell = U[celli];
         scalar Umag = mag(Ucell);
-
-        scalar Tmag = 1;
-
-        if (Umag >= 100 || Umag <= 1)
-        {
-            Ucell -= Ucell;
-        }
         scalar Ux = Ucell.x();
         scalar Uy = Ucell.y();
         scalar Uz = Ucell.z();
+        //scalar r = sqrt(sqr(cellsC[celli].z()) + sqr(cellsC[celli].x()));
+        //vector rotDirection(-cellsC[celli].z()/r, 0, cellsC[celli].x()/r);
+
+        scalar Tmag = 1;
 
         vector Tvec(C2_tan*Umag*Ux, C2_axial*Umag*Uy, C2_tan*Umag*Uz);
 
         Usource[celli] += Tmag*Tvec*cellsV[celli];
+        Info << "test" << endl;
+        // Unsure if volume div is needed?
+        //Usource[celli] += T*(cellsV[celli]/totalV);
     }
 
     if

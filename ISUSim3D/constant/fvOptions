@@ -25,13 +25,13 @@ disk1
 
         selectionMode   cellSet;
         cellSet         actuationDiskMain;
-        diskDir         (0 -1 0);    // Not Used
-        Cp              500;	// Not Used
-        Ct              500;  // Not Used
-        diskArea        500;	// Repurposed as disk force in N
+        diskDir         (0 -1 0);    // Orientation of the disk
+        Cp              500;	// power coefficient
+        Ct              500;  // Should be 400-500 Pa pressure drop across 
+        diskArea        500;
 
 		monitorMethod	points;
-		monitorCoeffs // Not Used
+		monitorCoeffs
 		{
 			points
 			(
@@ -62,65 +62,18 @@ disk2
 
         selectionMode   cellSet;
         cellSet         actuationDiskTurn;
-        diskDir         (0 1 0);    // Not Used
-        Cp              500;	// Not Used
-        Ct              500;  // Not Used
-        diskArea        50; // Repurposed as disk force in N
+        diskDir         (0 1 0);  // Switch for force method. (1 0 0) = constant/external dynamic, (0 1 0) = OF dynamic
+        Cp              1;	// Angle Damping Factor
+        Ct              15;  // Vane Angle
+        diskArea        10;  // (Initial) Thrust
 
-		monitorMethod	points;
-		monitorCoeffs // Not Used
+		monitorMethod	cellSet;
+		monitorCoeffs
 		{
-			points
-			(
-				(0.35 2.3 0.05)
-				(0.4 2.3 0.05)
-				(0.45 2.3 0.05)
-				(0.5 2.3 0.05)
-				(0.55 2.3 0.05)
-				//(0.35 2.7 0.05)
-				//(0.45 2.7 0.05)
-				//(0.55 2.7 0.05)
-			);
+			cellSet actuationDiskTurnMonitor;
 		}
 		
 		variant			ts_turn;
-    }
-	
-}
-
-disk3
-{
-    type            actuationDiskSource;
-	active			off;
-	
-	actuationDiskSourceCoeffs
-    {
-        fields      (U);
-
-        selectionMode   cellSet;
-        cellSet         actuationDiskPorous;
-        diskDir         (0 1 0);  // Not Used
-        Cp              500;	// Not Used
-        Ct              500;  // Not Used
-        diskArea        50;   // Not Used
-
-		monitorMethod	points;
-		monitorCoeffs // Not Used
-		{
-			points
-			(
-				(0.35 2.3 0.05)
-				(0.4 2.3 0.05)
-				(0.45 2.3 0.05)
-				(0.5 2.3 0.05)
-				(0.55 2.3 0.05)
-				//(0.35 2.7 0.05)
-				//(0.45 2.7 0.05)
-				//(0.55 2.7 0.05)
-			);
-		}
-		
-		variant			porous;
     }
 	
 }

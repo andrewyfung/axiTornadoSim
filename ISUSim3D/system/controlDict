@@ -15,13 +15,13 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     simpleFoam;
+application     porousSimpleFoam;
 
 startFrom       latestTime;
 
 stopAt          endTime;
 
-endTime         10000;
+endTime         5000;
 
 deltaT          1;
 
@@ -29,7 +29,7 @@ writeControl    timeStep;
 
 writeInterval   100;
 
-purgeWrite      1;
+purgeWrite      2;
 
 writeFormat     binary;
 
@@ -76,9 +76,10 @@ functions
 		writeControl	none;
 	}
 
-	#include "FOvortex"
-	#include "FOinlet"
-	#include "FOturn"
+	// #include "FOvortex"
+	// #include "FOinlet"
+	// #include "FOturn"
+	//#include "FOangle"
 
 }
 
