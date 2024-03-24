@@ -349,6 +349,8 @@ void Foam::fv::actuationDiskSource::calcTSTurn
     Ostream& os = file();
 
     // Monitor and average monitor-region U and rho
+    double minY = 999.9;
+    double avgCt = 0.0;
     vector Uref(Zero); //---
     scalar flowAngle = 0.0;
     label szMonitorCells = monitorCells_.size();
@@ -362,9 +364,18 @@ void Foam::fv::actuationDiskSource::calcTSTurn
         scalar angle = atan(cellsC[celli].z()/(cellsC[celli].x()+0.000001));
         
         scalar Urad = mag(U[celli].x()*cos(angle)) + mag(U[celli].z()*sin(angle));
-        scalar Utan = mag(U[celli].z()*cos(angle)) - mag(U[celli].x()*sin(angle));
+        // scalar Utan = mag(U[celli].z()*cos(angle)) - mag(U[celli].x()*sin(angle));
 
-        flowAngle = flowAngle + mag(atan(Utan/(Urad+0.000001)));
+        if (cellsC[celli].y() < minY)
+        {
+            minY = cellsC[celli].y();
+        }
+
+        if (cellsC[celli].y() - 0.25 < minY)
+        {
+            flowAngle = flowAngle + mag(atan(Urad/(U[celli].y()+0.000001)));
+            avgCt++;
+        }
 
         // os << cellsC[celli].x() << tab << cellsC[celli].y() << tab << cellsC[celli].z() << tab << angle << endl;
         // os << tab << U[celli].x() << tab << U[celli].z() << tab << Utan << tab << Uy << endl;
@@ -375,7 +386,7 @@ void Foam::fv::actuationDiskSource::calcTSTurn
     reduce(szMonitorCells, sumOp<label>());
 
     Uref /= szMonitorCells;
-    flowAngle /= szMonitorCells;
+    flowAngle /= avgCt;
     flowAngle *= 180/3.14159;
 
     // Monitor and average U and rho on actuator disk
