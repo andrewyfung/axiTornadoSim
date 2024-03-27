@@ -83,8 +83,6 @@ topoSet
 rm 0/*
 cp 0_MT/* 0
 
-setExprFields
-
 rm system/decomposeParDict
 cp system/decomposeParDict_run system/decomposeParDict
 

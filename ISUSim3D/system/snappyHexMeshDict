@@ -44,7 +44,7 @@ geometry
     {
         type box;
         min  (-6 0 -6);
-        max  (6 0.04 6);
+        max  (6 0.1 6);
     }
 
     tallRefine
@@ -138,7 +138,7 @@ castellatedMeshControls
     (
         {
             file "tornadoSimulator.eMesh";
-            levels ((0.025 2));
+            levels ((0.025 1));
         }
         {
             file "tornadoSimulatorATMMask.eMesh";
@@ -162,7 +162,7 @@ castellatedMeshControls
         tornadoSimulator
         {
             // Surface-wise min and max refinement level
-            level (0 1);
+            level (0 0);
 
             // Optional specification of patch type (default is wall). No
             // constraint types (cyclic, symmetry) etc. are allowed.
@@ -175,7 +175,7 @@ castellatedMeshControls
 
         atmosphereTop
         {
-            level (0 1);
+            level (0 0);
 
             patchInfo
             {
@@ -207,35 +207,35 @@ castellatedMeshControls
         groundBox
         {
             mode inside;
-            levels ((1E15 2));
+            levels ((1E15 1));
         }
 
         tallRefine
         {
             mode inside;
-            levels ((1E15 4));
+            levels ((1E15 2));
         }
-    	tallerRefine
-    	{
-    	    mode inside;
-            levels ((1E15 1));
-    	}
-    	midRefine
-    	{
-    	    mode inside;
-    	    levels ((1E15 1));
-    	}
-        wideRefine
-        {
-            mode inside;
-            levels ((1E15 1));
-        }
+    	// tallerRefine
+    	// {
+    	//     mode inside;
+        //     levels ((1E15 1));
+    	// }
+    	// midRefine
+    	// {
+    	//     mode inside;
+    	//     levels ((1E15 1));
+    	// }
+        // wideRefine
+        // {
+        //     mode inside;
+        //     levels ((1E15 1));
+        // }
 
-        diskRefine
-        {
-        	mode inside;
-        	levels ((1E15 2));
-        }
+        // diskRefine
+        // {
+        // 	mode inside;
+        // 	levels ((1E15 2));
+        // }
     }
 
 

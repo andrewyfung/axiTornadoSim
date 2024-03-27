@@ -26,9 +26,9 @@ disk1
         selectionMode   cellSet;
         cellSet         actuationDiskMain;
         diskDir         (0 -1 0);    // Orientation of the disk
-        Cp              500;	// power coefficient
-        Ct              500;  // Should be 400-500 Pa pressure drop across 
-        diskArea        500;
+        Cp              500;	// Unused
+        Ct              500;  // Unused
+        diskArea        500; // Disk Thrust (N)
 
 		monitorMethod	points;
 		monitorCoeffs
@@ -61,7 +61,7 @@ disk2
         fields      (U);
 
         selectionMode   cellSet;
-        cellSet         actuationDiskTurn;
+        cellSet         actuationDiskTurnMonitor;
         diskDir         (0 1 0);  // Switch for force method. (1 0 0) = constant/external dynamic, (0 1 0) = OF dynamic
         Cp              1;	// Angle Damping Factor
         Ct              15;  // Vane Angle

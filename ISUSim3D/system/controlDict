@@ -27,9 +27,9 @@ deltaT          1;
 
 writeControl    timeStep;
 
-writeInterval   100;
+writeInterval   500;
 
-purgeWrite      2;
+purgeWrite      1;
 
 writeFormat     binary;
 
@@ -77,8 +77,8 @@ functions
 	}
 
 	// #include "FOvortex"
-	// #include "FOinlet"
-	// #include "FOturn"
+	#include "FOinlet"
+	#include "FOturn"
 	//#include "FOangle"
 
 }
