@@ -22,8 +22,8 @@ actions
         type    cellSet;
         action  new;
         source  cylinderToCell;
-        p1      (0 2.81 0);//p1      (0 2.81 0);
-        p2      (0 2.83 0);
+        p1      (0 2.8 0);//p1      (0 2.81 0);
+        p2      (0 2.85 0);
         radius  0.92;
     }
 
@@ -35,15 +35,14 @@ actions
         set     actuationDisk1CellSet;
     }
 
-
-    // Turning Actuator Disk
+    // Turning Actuator Disk Monitor Region
     {
         name    actuationDisk2CellSet;
         type    cellSet;
         action  new;
         source  cylinderToCell;
         p1      (0 1.6 0);
-        p2      (0 1.8 0);
+        p2      (0 3.2 0);
         radius  2.755;
     }
     {
@@ -52,21 +51,48 @@ actions
         action  delete;
         source  cylinderToCell;
         p1      (0 1.5 0);
-        p2      (0 1.9 0);
+        p2      (0 3.5 0);
         radius  2.425;
     }
-
     {
-        name    actuationDiskTurn;
+        name    actuationDiskTurnMonitor;
         type    cellZoneSet;
         action  new;
         source  setToCellZone;
         set     actuationDisk2CellSet;
     }
+
+    // // Turning Actuator Disk Region
+    // {
+    //     name    actuationDisk3CellSet;
+    //     type    cellSet;
+    //     action  new;
+    //     source  cylinderToCell;
+    //     p1      (0 3.74 0);
+    //     p2      (0 4.02 0);
+    //     radius  2.05;
+    // }
+    // {
+    //     name    actuationDisk3CellSet;
+    //     type    cellSet;
+    //     action  delete;
+    //     source  cylinderToCell;
+    //     p1      (0 3.74 0);
+    //     p2      (0 4.02 0);
+    //     radius  1.25;
+    // }
+    // {
+    //     name    actuationDiskTurn;
+    //     type    cellZoneSet;
+    //     action  new;
+    //     source  setToCellZone;
+    //     set     actuationDisk3CellSet;
+    // }
+
 	
 	// Honeycomb Porous Region
     {
-        name    actuationDisk3CellSet;
+        name    actuationDisk4CellSet;
         type    cellSet;
         action  new;
         source  cylinderToCell;
@@ -80,7 +106,7 @@ actions
         type    cellZoneSet;
         action  new;
         source  setToCellZone;
-        set     actuationDisk3CellSet;
+        set     actuationDisk4CellSet;
     }
 	
 	
